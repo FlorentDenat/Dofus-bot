@@ -1,0 +1,7 @@
+# findMe()
+# getMap()
+# useSort(cible)
+# passTurn()
+# findMob()
+# getSpells()
+# findLDV()

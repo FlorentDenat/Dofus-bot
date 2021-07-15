@@ -1,0 +1,3 @@
+# isMyTurn()
+# isFightStarted()
+# isNewMessage()
