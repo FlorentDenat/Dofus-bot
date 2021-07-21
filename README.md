@@ -13,6 +13,7 @@ This bot was created for a university project. The purpose is not to destroy the
 - Numpy
 - PyAutoGUI
 - Dofus
+- pytesseract
 
 ## Execute
 

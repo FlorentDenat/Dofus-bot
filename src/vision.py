@@ -1,3 +1,4 @@
 # isMyTurn()
 # isFightStarted()
 # isNewMessage()
+# isLoadedMap()
