@@ -1,8 +1,36 @@
 import pyautogui
+import pyperclip
 from time import time, sleep
 from PIL import ImageGrab
 from threading import Lock, Thread
 import sys
+import cv2
+import numpy as np
+
+#############################################################
+# Goal: return the position of the template on the image
+# Author: Dauriac Paul, Denat Florent
+#############################################################
+def findPosition(image,template):
+	img_rgb = cv2.imread(image)
+	img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)
+
+	template = cv2.imread(template,0)
+	w, h = template.shape[::-1]
+
+	# Apply template Matching
+	res = cv2.matchTemplate(img_gray,template,cv2.TM_CCOEFF_NORMED)
+	# Specify a threshold for the template matching
+	threshold = 0.8
+	# Store the location of the template in the image
+	loc = np.where( res >= threshold)
+	# If we don't find the template, we return (-1,-1) to say that we don't have position.
+	if(len(loc[0]) == 0):
+		return (-1,-1)
+	# * to get the value of the array
+	# zip returns an iterator of tuples based on the iterable objects.
+	for pt in zip(*loc[::-1]):
+		return (pt[0],pt[1]+h)
 
 # printMousePosition()
 def printMousePosition():
@@ -11,7 +39,8 @@ def printMousePosition():
         print(pyautogui.position())
 
 # takeScreen(x1,y1,x2,y2)
-def takeScreen(x1,y1,x2,y2):
+def takeScreen(pixelregion):
+    (x1,y1),(x2,y2) = pixelregion
     img = ImageGrab.grab(bbox=(x1,y1,x2,y2))
     return img
 
@@ -19,12 +48,32 @@ def takeScreen(x1,y1,x2,y2):
 def showScreen(screen):
     screen.show()
 
+def click(pos):
+    x,y = pos
+    pyautogui.moveTo(x, y)
+    pyautogui.click()
+
 # altTab()
 def altTab():
     pyautogui.keyDown('alt')
     pyautogui.keyDown('tab')
     pyautogui.keyUp('tab')
     pyautogui.keyUp('alt')
+
+# newTab()
+def newTab():
+    pyautogui.keyDown('ctrl')
+    pyautogui.keyDown('t')
+    pyautogui.keyUp('ctrl')
+    pyautogui.keyUp('t')
+
+# write(string word)
+def write(word):
+    pyautogui.write(word, interval=0.01)
+
+def writeSpecial(word):
+    pyperclip.copy(word)
+    pyautogui.hotkey("ctrl", "v")
 
 #Décorateur chrono !
 def chrono(fonction):
@@ -51,8 +100,7 @@ def FOCUS_DOFUS_SCREEN():
         dofus_window.maximize()
     sleep(1)
 
-def check_color(top_left_corner, bottom_right_corner, color):
-    # TODO: fix because it's doesn't work, it is fitted to red only
+def find_color(top_left_corner, bottom_right_corner, color):
     x1, y1 = top_left_corner
     x2, y2 = bottom_right_corner
     red, green, blue = color
@@ -63,14 +111,19 @@ def check_color(top_left_corner, bottom_right_corner, color):
     for pix_x in range(img.size[0]):
         for pix_y in range(img.size[1]):
             r, g, b = pix[(pix_x, pix_y)]
-            if r > red and g < green and b < blue:
-                return True
-    return False
+            if r == red and g == green and b == blue:
+                return (pix_x,pix_y)
+    return (-1,-1)
 
 def check_pixel_color(pixel_position, color):
     x, y = pixel_position
     im = pyautogui.screenshot(region=(x, y, 1, 1))
     return im.getpixel((0,0)) == color
+
+def get_pixel_color(pixel_position):
+    x, y = pixel_position
+    im = pyautogui.screenshot(region=(x, y, 1, 1))
+    return im.getpixel((0,0))
 
 def check_image(image_path, region, grayscale=True, confidence=.65):
     coordinates = pyautogui.locateOnScreen(image_path, grayscale=grayscale, confidence=confidence, region=region)
@@ -125,4 +178,5 @@ class SingletonMeta(type):
                 instance = super().__call__(*args, **kwargs)
                 cls._instances[cls] = instance
         return cls._instances[cls]
+
 # checkPods()

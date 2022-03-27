@@ -1,5 +1,6 @@
 from collections import deque
- 
+
+# https://www.pythonpool.com/a-star-algorithm-python/
 class Graph:
     def __init__(self, adjac_lis):
         self.adjac_lis = adjac_lis
@@ -8,15 +9,10 @@ class Graph:
         return self.adjac_lis[v]
  
     # This is heuristic function which is having equal values for all nodes
-    def h(self, n):
-        H = {
-            'A': 1,
-            'B': 1,
-            'C': 1,
-            'D': 1
-        }
- 
-        return H[n]
+    # We use Manhattan distance between test point and stop point. 
+    # VERIFIER L'HEURISTIQUE EN PRINTANT QUAND J'AURAIS DES DATAAAAAAAAAS
+    def h(self,n,stop):
+        return (abs(stop[0]-n[0]) + abs(stop[1]-n[1]))
  
     def a_star_algorithm(self, start, stop):
         # In this open_lst is a list of nodes which have been visited, but who's 
@@ -40,7 +36,7 @@ class Graph:
  
             # it will find a node with the lowest value of f() -
             for v in open_lst:
-                if n == None or poo[v] + self.h(v) < poo[n] + self.h(n):
+                if n == None or poo[v] + self.h(v,stop) < poo[n] + self.h(n,stop):
                     n = v;
  
             if n == None:
@@ -64,20 +60,21 @@ class Graph:
                 return reconst_path
  
             # for all the neighbors of the current node do
-            for (m, weight) in self.get_neighbors(n):
-              # if the current node is not presentin both open_lst and closed_lst
+            # Here the weight is set at 1 between all points.
+            for m in self.get_neighbors(n):
+                # if the current node is not presentin both open_lst and closed_lst
                 # add it to open_lst and note n as it's par
                 if m not in open_lst and m not in closed_lst:
                     open_lst.add(m)
                     par[m] = n
-                    poo[m] = poo[n] + weight
+                    poo[m] = poo[n] + 1
  
                 # otherwise, check if it's quicker to first visit n, then m
                 # and if it is, update par data and poo data
                 # and if the node was in the closed_lst, move it to open_lst
                 else:
-                    if poo[m] > poo[n] + weight:
-                        poo[m] = poo[n] + weight
+                    if poo[m] > poo[n] + 1:
+                        poo[m] = poo[n] + 1
                         par[m] = n
  
                         if m in closed_lst:
@@ -92,11 +89,24 @@ class Graph:
         print('Path does not exist!')
         return None
 
-adjac_lis = {
-    'A': [('B', 1), ('C', 3), ('D', 7)],
-    'B': [('D', 5)],
-    'C': [('D', 12)]
-}
+    #Creer le graph auto : Sur une map, check les accessibles autour et où cliquer.
+    # Noter dans le graph, et mettre les maps notées dans les maps a voir. (save dans un fichier pour recommencer)
+    # Aller dans la map connu la plus proche et recommencer.
 
-graph1 = Graph(adjac_lis)
-graph1.a_star_algorithm('A', 'D')
+    # Pour faire ça commencer par tester sur un petit echantillon créé a la main. 
+    # Quand les fonctions de déplacement fonctionnent, on rempli.
+
+    # def check_adj_map(direction)
+    # def find_adj_maps():
+    # def write_adj_maps():
+
+
+# adjac_lis_dof = {
+#     (0,0): {(0,1) : (1000,500), (1,0) :(500,0), (-1,0) : (500,1000)},
+#     (0,1): {(1,1) : (500,0)},
+#     (1,0): {(1,1) : (1000,500)},
+#     (-1,0): {}
+# }
+
+# graph1 = Graph(adjac_lis_dof)
+# graph1.a_star_algorithm((0,0), (1,1))

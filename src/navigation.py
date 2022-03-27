@@ -2,31 +2,77 @@ import cv2
 from PIL import ImageGrab, Image
 import pytesseract
 from src.utils import *
+from src.enum.map import *
+from src.graph import *
 import numpy as np
 
 class Navigation:
     def __init__(self):
-        self.vertical_position = 0
-        self.horizontal_position = 0
+        self.position = (0,0)
+        self.graph = Graph(MapsGraph.adjac_lis_dof)
 
 
     # FindPath(begin,end):
     ## Use simple graph to find path
-    # graph = {'A': ['B', 'E', 'C'],
-    #             'B': ['A', 'D', 'E'],
-    #             'C': ['A', 'F', 'G'],
-    #             'D': ['B', 'E'],
-    #             'E': ['A', 'B', 'D'],
-    #             'F': ['C'],
-    #             'G': ['C']}
+    def findPath(self,stop):
+        return self.graph.a_star_algorithm(self.position, stop)
+
+    # findDirection(map1, map2):
+    # Find the cardinal direction from one map to another
+    def findDirection(self,map1,map2):
+        if(map1[0] < map2[0]):
+            return 'e'
+        elif(map1[0] > map2[0]):
+            return 'o'
+        elif(map1[1] < map2[1]):
+            return 'n'
+        else :
+            return 's'
+
     # ConvertPathToInstructions(path)
     ## using the path and a dict of mouse position for each map changement, convert path to clicks
+    def convertPathToInstructions(self,path):
+        instructions = []
+        self.convertPathRec(path,instructions)
+        return instructions
+        
+    def convertPathRec(self,path,res):
+        if len(path) == 2:
+            res.append(self.findDirection(path[0],path[1]))
+        else:
+            res.append(self.findDirection(path[0],path[1]))
+            self.convertPathRec(path[1:],res)
+
     # Move(direction)
     ## Click using the dict of mouse positions for each map
-    # MoveTo(position)
+    def move(self,direction):
+        if direction == 'n':
+            click(MapsGraph.adjac_lis_dof[self.position][(self.position[0]+1,self.position[1])])
+        elif direction == 's':
+            click(MapsGraph.adjac_lis_dof[self.position][(self.position[0]-1,self.position[1])])
+        elif direction == 'e':
+            click(MapsGraph.adjac_lis_dof[self.position][(self.position[0],self.position[1]+1)])
+        else:
+            click(MapsGraph.adjac_lis_dof[self.position][(self.position[0],self.position[1]-1)])
+
+    # followInstructions(instructions)
+    ## suis les instructions de direction (points cardinaux). En gros bouge et attends
+    def followInstructions(self,instructions):
+        for instruction in instructions:
+            self.move(instruction)
+            # IMPLEMENTER UNE FONCTION QUI VERIFIE QU'ON A BOUGE
+            # ATTENDRE DE VOIR UN PIXEL NOIR, PUIS PLUS NOIR ?
+            # SECURITE AU BOUT DE X SECONDES ON CHECK NOTRE POS ?
+            sleep(5)
+
+    # MoveTo(stop)
     ## Find path, instructions, and then move. Have to wait map change each time.
+    def moveTo(self,stop):
+        path = self.findPath(stop)
+        instructions = self.convertPathToInstructions(path)
+
     # findPOS()
-    def findPOS():
+    def findPOS(self):
         # Le pixel de l'écriture des POS vaut [228 228 226]
         imgGrab = ImageGrab.grab(bbox=(14,74,95,104))
         
@@ -66,3 +112,7 @@ class Navigation:
         # cv2.imwrite("merged.png", result)
         data = pytesseract.image_to_string(result, lang='eng',config='--psm 6 -c tessedit_char_whitelist=0123456789-,')
         return data.strip()
+
+# pos = Navigation()
+# path = [(0, 0), (0, 1), (1, 1),(0,1),(0,0)]
+# print(pos.convertPath(path))    
