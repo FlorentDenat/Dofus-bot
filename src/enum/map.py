@@ -14,16 +14,16 @@ class PixelMoove(Enum):
     DOWN_END = (504, 905)
     RIGHT_END = (1575, 855)
     LEFT_END = (334, 46)
-    UP_MIDDLE = (559, 33)
-    DOWN_MIDDLE = (476, 905)
-    RIGHT_MIDDLE = (1575, 391)
-    LEFT_MIDDLE = (334, 396)
+    UP_MIDDLE = (936, 33)
+    DOWN_MIDDLE = (980, 905)
+    RIGHT_MIDDLE = (1575, 465)
+    LEFT_MIDDLE = (334, 442)
 
 class MapsGraph(Enum):
-    adjac_lis_dof = {
-    (5,10): {(5,11) : PixelMoove.UP_MIDDLE, (6,10) : PixelMoove.RIGHT_MIDDLE, (5,9) : PixelMoove.DOWN_MIDDLE, (4,10) : PixelMoove.LEFT_MIDDLE},
-    (5,11): {(5,10) : PixelMoove.DOWN_MIDDLE},
-    (6,10): {(5,10) : PixelMoove.LEFT_MIDDLE},
-    (4,10): {(5,10) : PixelMoove.RIGHT_MIDDLE},
-    (5,9): {(5,10) : PixelMoove.UP_MIDDLE}
+    ADJAC_GRAPH = {
+    (5,10): {(5,11) : PixelMoove.DOWN_MIDDLE.value, (6,10) : PixelMoove.RIGHT_MIDDLE.value, (5,9) : PixelMoove.UP_MIDDLE.value, (4,10) : PixelMoove.LEFT_MIDDLE.value},
+    (5,11): {(5,10) : PixelMoove.UP_MIDDLE.value},
+    (6,10): {(5,10) : PixelMoove.LEFT_MIDDLE.value},
+    (4,10): {(5,10) : PixelMoove.RIGHT_MIDDLE.value},
+    (5,9): {(5,10) : PixelMoove.DOWN_MIDDLE.value}
     }

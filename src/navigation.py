@@ -9,7 +9,7 @@ import numpy as np
 class Navigation:
     def __init__(self):
         self.position = (0,0)
-        self.graph = Graph(MapsGraph.adjac_lis_dof)
+        self.graph = Graph(MapsGraph.ADJAC_GRAPH.value)
 
 
     # FindPath(begin,end):
@@ -25,9 +25,9 @@ class Navigation:
         elif(map1[0] > map2[0]):
             return 'l'
         elif(map1[1] < map2[1]):
-            return 'u'
-        else :
             return 'd'
+        else :
+            return 'u'
 
     # ConvertPathToInstructions(path)
     ## using the path and a dict of mouse position for each map changement, convert path to clicks
@@ -47,29 +47,42 @@ class Navigation:
     ## Click using the dict of mouse positions for each map
     def move(self,direction):
         if direction == 'u':
-            click(MapsGraph.adjac_lis_dof[self.position][(self.position[0]+1,self.position[1])])
+            click(self.graph.adjac_lis[self.position][(self.position[0],self.position[1]-1)])
+            self.position = (self.position[0],self.position[1]-1)
         elif direction == 'd':
-            click(MapsGraph.adjac_lis_dof[self.position][(self.position[0]-1,self.position[1])])
+            click(self.graph.adjac_lis[self.position][(self.position[0],self.position[1]+1)])
+            self.position = (self.position[0],self.position[1]+1)
         elif direction == 'r':
-            click(MapsGraph.adjac_lis_dof[self.position][(self.position[0],self.position[1]+1)])
+            click(self.graph.adjac_lis[self.position][(self.position[0]+1,self.position[1])])
+            self.position = (self.position[0]+1,self.position[1])
         else:
-            click(MapsGraph.adjac_lis_dof[self.position][(self.position[0],self.position[1]-1)])
+            click(self.graph.adjac_lis[self.position][(self.position[0]-1,self.position[1])])
+            self.position = (self.position[0]-1,self.position[1])
+
+    # Attends que nous changions de map.
+    def waitFinishMove(self):
+        while(not(check_pixel_color((1000,500), (0,0,0)))):
+            sleep(0.1)
+        #On a eu l'écran de chargement.
+        while(check_pixel_color((1000,500), (0,0,0))):
+            sleep(0.1)
+        sleep(0.1)
+        # On est sur la nouvelle map.
 
     # followInstructions(instructions)
     ## suis les instructions de direction (points cardinaux). En gros bouge et attends
     def followInstructions(self,instructions):
         for instruction in instructions:
             self.move(instruction)
-            # IMPLEMENTER UNE FONCTION QUI VERIFIE QU'ON A BOUGE
-            # ATTENDRE DE VOIR UN PIXEL NOIR, PUIS PLUS NOIR ?
             # SECURITE AU BOUT DE X SECONDES ON CHECK NOTRE POS ?
-            sleep(5)
+            self.waitFinishMove()
 
     # MoveTo(stop)
     ## Find path, instructions, and then move. Have to wait map change each time.
     def moveTo(self,stop):
         path = self.findPath(stop)
         instructions = self.convertPathToInstructions(path)
+        self.followInstructions(instructions)
 
     # findPOS()
     def findPOS(self):
@@ -111,7 +124,11 @@ class Navigation:
         # cv2.waitKey(0)
         # cv2.imwrite("merged.png", result)
         data = pytesseract.image_to_string(result, lang='eng',config='--psm 6 -c tessedit_char_whitelist=0123456789-,')
-        self.position = data.strip()
+        pos_string = data.strip()
+        if pos_string[-1] == ",":
+            pos_string = pos_string[:-1]
+        pos_split = pos_string.split(",")
+        self.position = (int(pos_split[0]),int(pos_split[1]))
         return self.position
 
 # pos = Navigation()
