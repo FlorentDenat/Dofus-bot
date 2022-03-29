@@ -6,15 +6,24 @@ class MapsMooveException(Enum):
     RED_WAIT = (216, 68, 79)
 
 class PixelMoove(Enum):
-    UP = (500,500)
-    DOWN = (500,500)
-    RIGHT = (500,500)
-    LEFT = (500,500)
+    UP_START = (377, 33)
+    DOWN_START = (1456, 905)
+    RIGHT_START = (1575, 74)
+    LEFT_START = (334, 838)
+    UP_END = (1495, 33)
+    DOWN_END = (504, 905)
+    RIGHT_END = (1575, 855)
+    LEFT_END = (334, 46)
+    UP_MIDDLE = (559, 33)
+    DOWN_MIDDLE = (476, 905)
+    RIGHT_MIDDLE = (1575, 391)
+    LEFT_MIDDLE = (334, 396)
 
 class MapsGraph(Enum):
     adjac_lis_dof = {
-    (0,0): {(0,1) : (1000,500), (1,0) :(500,0), (-1,0) : (500,1000)},
-    (0,1): {(1,1) : (500,0)},
-    (1,0): {(1,1) : (1000,500)},
-    (-1,0): {}
+    (5,10): {(5,11) : PixelMoove.UP_MIDDLE, (6,10) : PixelMoove.RIGHT_MIDDLE, (5,9) : PixelMoove.DOWN_MIDDLE, (4,10) : PixelMoove.LEFT_MIDDLE},
+    (5,11): {(5,10) : PixelMoove.DOWN_MIDDLE},
+    (6,10): {(5,10) : PixelMoove.LEFT_MIDDLE},
+    (4,10): {(5,10) : PixelMoove.RIGHT_MIDDLE},
+    (5,9): {(5,10) : PixelMoove.UP_MIDDLE}
     }

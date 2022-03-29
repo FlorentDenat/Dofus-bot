@@ -18,16 +18,16 @@ class Navigation:
         return self.graph.a_star_algorithm(self.position, stop)
 
     # findDirection(map1, map2):
-    # Find the cardinal direction from one map to another
+    # Find the direction from one map to another
     def findDirection(self,map1,map2):
         if(map1[0] < map2[0]):
-            return 'e'
+            return 'r'
         elif(map1[0] > map2[0]):
-            return 'o'
+            return 'l'
         elif(map1[1] < map2[1]):
-            return 'n'
+            return 'u'
         else :
-            return 's'
+            return 'd'
 
     # ConvertPathToInstructions(path)
     ## using the path and a dict of mouse position for each map changement, convert path to clicks
@@ -46,11 +46,11 @@ class Navigation:
     # Move(direction)
     ## Click using the dict of mouse positions for each map
     def move(self,direction):
-        if direction == 'n':
+        if direction == 'u':
             click(MapsGraph.adjac_lis_dof[self.position][(self.position[0]+1,self.position[1])])
-        elif direction == 's':
+        elif direction == 'd':
             click(MapsGraph.adjac_lis_dof[self.position][(self.position[0]-1,self.position[1])])
-        elif direction == 'e':
+        elif direction == 'r':
             click(MapsGraph.adjac_lis_dof[self.position][(self.position[0],self.position[1]+1)])
         else:
             click(MapsGraph.adjac_lis_dof[self.position][(self.position[0],self.position[1]-1)])
@@ -111,7 +111,8 @@ class Navigation:
         # cv2.waitKey(0)
         # cv2.imwrite("merged.png", result)
         data = pytesseract.image_to_string(result, lang='eng',config='--psm 6 -c tessedit_char_whitelist=0123456789-,')
-        return data.strip()
+        self.position = data.strip()
+        return self.position
 
 # pos = Navigation()
 # path = [(0, 0), (0, 1), (1, 1),(0,1),(0,0)]
