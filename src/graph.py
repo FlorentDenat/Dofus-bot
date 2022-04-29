@@ -89,17 +89,6 @@ class Graph:
         print('Path does not exist!')
         return None
 
-    #Creer le graph auto : Sur une map, check les accessibles autour et où cliquer.
-    # Noter dans le graph, et mettre les maps notées dans les maps a voir. (save dans un fichier pour recommencer)
-    # Aller dans la map connu la plus proche et recommencer.
-
-    # Pour faire ça commencer par tester sur un petit echantillon créé a la main. 
-    # Quand les fonctions de déplacement fonctionnent, on rempli.
-
-    # def check_adj_map(direction)
-    # def find_adj_maps():
-    # def write_adj_maps():
-
 
 # adjac_lis_dof = {
 #     (0,0): {(0,1) : (1000,500), (1,0) :(500,0), (-1,0) : (500,1000)},
