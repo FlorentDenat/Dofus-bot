@@ -9,17 +9,18 @@ import numpy as np
 class Navigation:
     def __init__(self):
         self.position = (0,0)
+        #CHANGER LA MANIERE DE LOAD LE GRAPH
         self.graph = Graph(MapsGraph.ADJAC_GRAPH.value)
 
 
-    # FindPath(begin,end):
+    # find_path(begin,end):
     ## Use simple graph to find path
-    def findPath(self,stop):
+    def find_path(self,stop):
         return self.graph.a_star_algorithm(self.position, stop)
 
-    # findDirection(map1, map2):
+    # find_direction(map1, map2):
     # Find the direction from one map to another
-    def findDirection(self,map1,map2):
+    def find_direction(self,map1,map2):
         if(map1[0] < map2[0]):
             return 'r'
         elif(map1[0] > map2[0]):
@@ -29,19 +30,19 @@ class Navigation:
         else :
             return 'u'
 
-    # ConvertPathToInstructions(path)
+    # convert_path_to_instructions(path)
     ## using the path and a dict of mouse position for each map changement, convert path to clicks
-    def convertPathToInstructions(self,path):
+    def convert_path_to_instructions(self,path):
         instructions = []
-        self.convertPathRec(path,instructions)
+        self.convert_path_rec(path,instructions)
         return instructions
         
-    def convertPathRec(self,path,res):
+    def convert_path_rec(self,path,res):
         if len(path) == 2:
-            res.append(self.findDirection(path[0],path[1]))
+            res.append(self.find_direction(path[0],path[1]))
         else:
-            res.append(self.findDirection(path[0],path[1]))
-            self.convertPathRec(path[1:],res)
+            res.append(self.find_direction(path[0],path[1]))
+            self.convert_path_rec(path[1:],res)
 
     # Move(direction)
     ## Click using the dict of mouse positions for each map
@@ -60,7 +61,7 @@ class Navigation:
             self.position = (self.position[0]-1,self.position[1])
 
     # Attends que nous changions de map.
-    def waitFinishMove(self):
+    def wait_finish_move(self):
         while(not(check_pixel_color((1000,500), (0,0,0)))):
             sleep(0.1)
         #On a eu l'écran de chargement.
@@ -69,23 +70,23 @@ class Navigation:
         sleep(0.1)
         # On est sur la nouvelle map.
 
-    # followInstructions(instructions)
+    # follow_instructions(instructions)
     ## suis les instructions de direction (points cardinaux). En gros bouge et attends
-    def followInstructions(self,instructions):
+    def follow_instructions(self,instructions):
         for instruction in instructions:
             self.move(instruction)
             # SECURITE AU BOUT DE X SECONDES ON CHECK NOTRE POS ?
-            self.waitFinishMove()
+            self.wait_finish_move()
 
-    # MoveTo(stop)
+    # move_to(stop)
     ## Find path, instructions, and then move. Have to wait map change each time.
-    def moveTo(self,stop):
-        path = self.findPath(stop)
-        instructions = self.convertPathToInstructions(path)
-        self.followInstructions(instructions)
+    def move_to(self,stop):
+        path = self.find_path(stop)
+        instructions = self.convert_path_to_instructions(path)
+        self.follow_instructions(instructions)
 
-    # findPOS()
-    def findPOS(self):
+    # find_POS()
+    def find_POS(self):
         # Le pixel de l'écriture des POS vaut [228 228 226]
         imgGrab = ImageGrab.grab(bbox=(14,74,95,104))
         

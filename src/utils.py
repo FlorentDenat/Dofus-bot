@@ -11,7 +11,7 @@ import numpy as np
 # Goal: return the position of the template on the image
 # Author: Dauriac Paul, Denat Florent
 #############################################################
-def findPosition(image,template):
+def find_position(image,template):
 	img_rgb = cv2.imread(image)
 	img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)
 
@@ -32,20 +32,20 @@ def findPosition(image,template):
 	for pt in zip(*loc[::-1]):
 		return (pt[0],pt[1]+h)
 
-# printMousePosition()
-def printMousePosition():
+# print_mouse_position()
+def print_mouse_position():
     while True:
         sleep(1)
         print(pyautogui.position())
 
-# takeScreen(x1,y1,x2,y2)
-def takeScreen(pixelregion):
+# take_screen(x1,y1,x2,y2)
+def take_screen(pixelregion):
     (x1,y1),(x2,y2) = pixelregion
     img = ImageGrab.grab(bbox=(x1,y1,x2,y2))
     return img
 
-# showScreen(screen)
-def showScreen(screen):
+# show_screen(screen)
+def show_screen(screen):
     screen.show()
 
 def click(pos):
@@ -53,15 +53,15 @@ def click(pos):
     pyautogui.moveTo(x, y)
     pyautogui.click()
 
-# altTab()
-def altTab():
+# alt_tab()
+def alt_tab():
     pyautogui.keyDown('alt')
     pyautogui.keyDown('tab')
     pyautogui.keyUp('tab')
     pyautogui.keyUp('alt')
 
-# newTab()
-def newTab():
+# new_tab()
+def new_tab():
     pyautogui.keyDown('ctrl')
     pyautogui.keyDown('t')
     pyautogui.keyUp('ctrl')
@@ -71,7 +71,7 @@ def newTab():
 def write(word):
     pyautogui.write(word, interval=0.01)
 
-def writeSpecial(word):
+def write_special(word):
     pyperclip.copy(word)
     pyautogui.hotkey("ctrl", "v")
 
@@ -120,6 +120,18 @@ def check_pixel_color(pixel_position, color):
     im = pyautogui.screenshot(region=(x, y, 1, 1))
     return im.getpixel((0,0)) == color
 
+def check_area_color(start_position,end_position, color):
+    x1, y1 = start_position
+    x2, y2 = end_position
+    sizex = x2 -x1
+    sizey = y2 -y1
+    im = pyautogui.screenshot(region=(x1, y1, sizex, sizey))
+    for i in range(sizex):
+        for j in range(sizey):
+            if im.getpixel((i,j)) == color:
+                return True
+    return False
+
 def get_pixel_color(pixel_position):
     x, y = pixel_position
     im = pyautogui.screenshot(region=(x, y, 1, 1))
@@ -128,6 +140,9 @@ def get_pixel_color(pixel_position):
 def check_image(image_path, region, grayscale=True, confidence=.65):
     coordinates = pyautogui.locateOnScreen(image_path, grayscale=grayscale, confidence=confidence, region=region)
     return coordinates is not None
+
+def manhattan_distance(p1,p2):
+    return (abs(p1[0]-p2[0]) + abs(p1[1]-p2[1]))
 
 class KillableThread(Thread):
     def __init__(self, *args, **keywords):
